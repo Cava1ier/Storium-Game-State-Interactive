@@ -33,7 +33,7 @@ const AddCardModal: React.FC = () => {
     // Filter cards based on selected type
     const filteredCards = useMemo(() => {
         if (!selectedCardTypeId) {
-            return allCards; // If no type selected, show all
+            return []; // Return empty if no type is selected
         }
         const typeId = parseInt(selectedCardTypeId, 10);
         return allCards.filter(card => 
@@ -41,12 +41,10 @@ const AddCardModal: React.FC = () => {
         );
     }, [selectedCardTypeId, allCards]);
 
-    // Reset selected card if it's not in the filtered list
+    // Reset selected card if the type changes
     useEffect(() => {
-        if (selectedCardId && !filteredCards.some(c => c.id === parseInt(selectedCardId))) {
-            setSelectedCardId('');
-        }
-    }, [filteredCards, selectedCardId]);
+        setSelectedCardId('');
+    }, [selectedCardTypeId]);
     
     // Effect for validation
     useEffect(() => {
@@ -71,7 +69,6 @@ const AddCardModal: React.FC = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (validationError || !selectedCardId || !selectedCardTypeId) {
-            // This should not be triggerable if button is disabled, but is a safeguard.
             return;
         }
         handleAddCardToCharacter(parseInt(selectedCardId), parseInt(selectedCardTypeId));
@@ -86,7 +83,7 @@ const AddCardModal: React.FC = () => {
                 <h2 className="text-xl font-bold mb-4 text-white">Add Card to {character.name}</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label htmlFor="card-type-select" className="block mb-2 text-sm font-medium text-gray-300">Card Type</label>
+                        <label htmlFor="card-type-select" className="block mb-2 text-sm font-medium text-gray-300">1. Select Card Type</label>
                         <select
                             id="card-type-select"
                             value={selectedCardTypeId}
@@ -100,12 +97,13 @@ const AddCardModal: React.FC = () => {
                         </select>
                     </div>
                     <div>
-                        <label htmlFor="card-select" className="block mb-2 text-sm font-medium text-gray-300">Master Card</label>
+                        <label htmlFor="card-select" className="block mb-2 text-sm font-medium text-gray-300">2. Select Master Card</label>
                         <select
                             id="card-select"
                             value={selectedCardId}
                             onChange={(e) => setSelectedCardId(e.target.value)}
-                            className="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            disabled={!selectedCardTypeId}
+                            className="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <option value="">Choose a card</option>
                             {filteredCards.map(card => (

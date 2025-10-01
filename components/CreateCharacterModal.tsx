@@ -16,20 +16,36 @@ const CardSelector: React.FC<{
     allCards: Card[];
     allCardTypes: CardType[];
     count: number;
-}> = ({ cardType, selectionType, onSelectionTypeChange, premadeId, onPremadeIdChange, customName, onCustomNameChange, customDesc, onCustomDescChange, allCards, allCardTypes, count }) => {
+    onCountChange: (count: number) => void;
+}> = ({ cardType, selectionType, onSelectionTypeChange, premadeId, onPremadeIdChange, customName, onCustomNameChange, customDesc, onCustomDescChange, allCards, allCardTypes, count, onCountChange }) => {
     const fieldId = cardType.toLowerCase();
     
     const relevantCardTypeId = allCardTypes.find(ct => ct.name === cardType)?.id;
     
     const filteredPremadeCards = allCards.filter(c => 
         !c.is_wild && 
-        (c.default_card_type_id === relevantCardTypeId || c.default_card_type_id === null)
+        (c.default_card_type_id === relevantCardTypeId || !c.default_card_type_id)
     );
 
     return (
         <fieldset className="p-4 border border-gray-600 rounded-md">
-            <legend className="px-2 text-lg font-semibold text-gray-300">{cardType} Card (x{count})</legend>
-            <div className="space-y-4">
+            <legend className="px-2 text-lg font-semibold text-gray-300 w-full flex justify-between items-center">
+                <span>{cardType} Card</span>
+                <div className="flex items-center gap-2">
+                    <label htmlFor={`${fieldId}-count`} className="text-sm font-normal text-gray-400">Count:</label>
+                    <input
+                        id={`${fieldId}-count`}
+                        type="number"
+                        value={count}
+                        onChange={e => onCountChange(parseInt(e.target.value, 10) || 0)}
+                        className="bg-gray-900 border border-gray-600 rounded-md p-1 w-20 text-sm text-center"
+                        min="0"
+                        max="10"
+                        aria-label={`${cardType} card count`}
+                    />
+                </div>
+            </legend>
+            <div className="space-y-4 mt-2">
                 <div className="flex items-center space-x-4">
                     <div className="flex items-center">
                         <input id={`${fieldId}-premade`} name={`${fieldId}-type`} type="radio" checked={selectionType === 'premade'} onChange={() => onSelectionTypeChange('premade')} className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 focus:ring-blue-500" />
@@ -94,7 +110,7 @@ const CreateCharacterModal: React.FC = () => {
         weaknessCardId: 0,
         weaknessCardName: '',
         weaknessCardDesc: '',
-        weaknessCardCount: 1,
+        weaknessCardCount: 2,
         subplotSelectionType: 'premade' as 'premade' | 'custom',
         subplotCardId: 0,
         subplotCardName: '',
@@ -196,6 +212,7 @@ const CreateCharacterModal: React.FC = () => {
                         allCards={allCards}
                         allCardTypes={allCardTypes}
                         count={payload.natureCardCount}
+                        onCountChange={(count) => handleChange('natureCardCount', count)}
                     />
                     
                     <CardSelector 
@@ -211,6 +228,7 @@ const CreateCharacterModal: React.FC = () => {
                         allCards={allCards}
                         allCardTypes={allCardTypes}
                         count={payload.strengthCardCount}
+                        onCountChange={(count) => handleChange('strengthCardCount', count)}
                     />
 
                     <CardSelector 
@@ -226,6 +244,7 @@ const CreateCharacterModal: React.FC = () => {
                         allCards={allCards}
                         allCardTypes={allCardTypes}
                         count={payload.weaknessCardCount}
+                        onCountChange={(count) => handleChange('weaknessCardCount', count)}
                     />
                     
                     <CardSelector 
@@ -241,6 +260,7 @@ const CreateCharacterModal: React.FC = () => {
                         allCards={allCards}
                         allCardTypes={allCardTypes}
                         count={payload.subplotCardCount}
+                        onCountChange={(count) => handleChange('subplotCardCount', count)}
                     />
                     
                     {error && <p className="text-sm text-red-400 text-center">{error}</p>}

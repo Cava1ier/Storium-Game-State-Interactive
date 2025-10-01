@@ -100,24 +100,45 @@ export interface NewCharacterPayload {
     natureCardId: number;
     natureCardName: string;
     natureCardDesc: string;
+    /**
+     * The number of 'Nature' cards the character will start with.
+     * This count is used by the `createCharacter` service method to determine
+     * how many instances of the selected (or created) Nature card to add to the
+     * character's inventory upon creation. The default is typically 2.
+     */
     natureCardCount: number;
 
     strengthSelectionType: 'premade' | 'custom';
     strengthCardId: number;
     strengthCardName: string;
     strengthCardDesc: string;
+    /**
+     * The number of 'Strength' cards the character will start with.
+     * This count determines how many copies of the chosen Strength card
+     * are given to the character initially. The default is typically 2.
+     */
     strengthCardCount: number;
 
     weaknessSelectionType: 'premade' | 'custom';
     weaknessCardId: number;
     weaknessCardName: string;
     weaknessCardDesc: string;
+    /**
+     * The number of 'Weakness' cards the character will start with.
+     * This count specifies the initial quantity of the selected Weakness card.
+     * The default is typically 1.
+     */
     weaknessCardCount: number;
     
     subplotSelectionType: 'premade' | 'custom';
     subplotCardId: number;
     subplotCardName: string;
     subplotCardDesc: string;
+    /**
+     * The number of 'Subplot' cards the character will start with.
+     * This count sets the starting number of the chosen Subplot card,
+     * representing a personal story arc. The default is typically 3.
+     */
     subplotCardCount: number;
 }
 

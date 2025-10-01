@@ -27,7 +27,7 @@ export class GameCRUDDelete extends BaseCrudHandler {
     }
 
     deleteCharacter = (id: number) => {
-        this.crud.readAll<CharacterCard>('tblCardsWTypesWCharacter', { character_id: id }).forEach(c => this.crud.delete('tblCardsWTypesWCharacter', c.id));
+        this.crud.readAll<CharacterCard>('tblCardsWTypesWCharacter', { character_id: id }).forEach(c => this.scaffold.removeCardFromCharacter(c.id));
         this.crud.readAll<PlayerCharacterOwnership>('tblPlayersCharactersOwnership', { character_id: id }).forEach(o => this.crud.delete('tblPlayersCharactersOwnership', o.id));
         this.crud.delete('tblCharacters', id);
     }
@@ -45,9 +45,11 @@ export class GameCRUDDelete extends BaseCrudHandler {
     }
     
     removeCardFromCharacter = (id: number) => {
-        if (this.crud.readAll<PlayedCard>('tblCardsPlayedOnChallenges', { CharacterwCards_id: id }).length > 0) {
-            throw new Error("Cannot remove a card that has already been played in a challenge.");
-        }
+        // Find and delete any instances of this card played on challenges.
+        const playedInstances = this.crud.readAll<PlayedCard>('tblCardsPlayedOnChallenges', { CharacterwCards_id: id });
+        playedInstances.forEach(p => this.crud.delete('tblCardsPlayedOnChallenges', p.id));
+
+        // Delete the card from the character's inventory.
         this.crud.delete('tblCardsWTypesWCharacter', id);
     }
     
