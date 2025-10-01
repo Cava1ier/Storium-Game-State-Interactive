@@ -1,5 +1,5 @@
 import { BaseCrudHandler } from './BaseCrudHandler';
-import { Game, Scene, Character, Challenge, Card, CardType, CharacterCard, PlayedCard, PipsPerChallenge, UICard, Player, PlayerCharacterOwnership, Act, UIPlayedCard } from '../../types';
+import { Game, Scene, Character, Challenge, Card, CardType, CharacterCard, PlayedCard, PipsPerChallenge, UICard, Player, PlayerCharacterOwnership, Act, UIPlayedCard, UIChallenge } from '../../types';
 
 export class GameCRUDRead extends BaseCrudHandler {
     // Game
@@ -11,15 +11,21 @@ export class GameCRUDRead extends BaseCrudHandler {
     // Scene
     getScenes = (actId: number) => this.crud.readAll<Scene>('tblScenes', { act_id: actId });
     getSceneMaxPips = (sceneId: number): number => {
-        const scene = this.crud.get<Scene>('tblScenes', sceneId);
-        if (!scene) return 0;
-        const act = this.crud.get<Act>('tblActs', scene.act_id);
-        if (!act) return 0;
-        const players = this.scaffold.getPlayersByGame(act.game_id);
-        return players.length * 3;
+        const charactersInScene = this.crud.readAll<Character>('tblCharacters', { scene_id: sceneId });
+        const activeCharacters = charactersInScene.filter(c => c.status === 'Active');
+        const activeCharacterIds = new Set(activeCharacters.map(c => c.id));
+        
+        if (activeCharacterIds.size === 0) {
+            return 0;
+        }
+        
+        const allOwnerships = this.scaffold.getPlayerCharacterOwnerships();
+        const playerOwnedCharacterCount = allOwnerships.filter(o => activeCharacterIds.has(o.character_id)).length;
+
+        return playerOwnedCharacterCount * 3;
     }
     getCurrentScenePipsUsed = (sceneId: number): number => {
-        const challenges = this.scaffold.getChallenges(sceneId);
+        const challenges = this.crud.readAll<Challenge>('tblChallenges', { scene_id: sceneId });
         return challenges.reduce((total, challenge) => total + this.scaffold.getPipsForChallenge(challenge.id), 0);
     }
     
@@ -37,7 +43,17 @@ export class GameCRUDRead extends BaseCrudHandler {
     getCharacters = (sceneId: number): Character[] => this.crud.readAll<Character>('tblCharacters', { scene_id: sceneId });
     
     // Challenge
-    getChallenges = (sceneId: number): Challenge[] => this.crud.readAll<Challenge>('tblChallenges', { scene_id: sceneId });
+    getChallenges = (sceneId: number): UIChallenge[] => {
+        const challenges = this.crud.readAll<Challenge>('tblChallenges', { scene_id: sceneId });
+        return challenges.map(challenge => {
+            const card = this.crud.get<Card>('tblCards', challenge.card_id);
+            if (!card) {
+                console.error(`Card with ID ${challenge.card_id} not found for challenge ${challenge.id}`);
+                return null;
+            }
+            return { ...challenge, card };
+        }).filter((c): c is UIChallenge => c !== null);
+    }
     
     // Card
     getAllCards = (): Card[] => this.crud.readAll<Card>('tblCards');

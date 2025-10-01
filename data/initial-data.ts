@@ -56,6 +56,10 @@ tblCards:id|name|desc|is_wild|default_card_type_id
 9|Unnamed Wild (Strength)|A blank card for a moment of inspiration.|1|7
 10|Unnamed Wild (Weakness)|A blank card for an unforeseen complication.|1|8
 11|Unfolding Subplot|A personal story arc waiting to be discovered.|0|3
+12|Suspicious Bouncer|He's seen it all, and isn't impressed.|0|6
+13|Jammed Lock|A rusty, stubborn mechanism stands in the way.|0|5
+14|Flickering Power Grid|The lights buzz and threaten to plunge the room into darkness.|0|5
+15|Rival Scavenger|Another desperate soul after the same prize.|0|6
 
 tblCardsWTypesWCharacter:id|character_id|card_type_id|card_id|count
 1|1|1|1|1
@@ -67,11 +71,11 @@ tblCardsWTypesWCharacter:id|character_id|card_type_id|card_id|count
 7|4|2|2|1
 8|4|1|3|1
 
-tblChallenges:id|scene_id|name|difficulty|type|strong_outcome|weak_outcome
-1|1|Suspicious Bouncer|Medium|Character|The bouncer gives a knowing nod and looks the other way.|The bouncer blocks the path, demanding a hefty bribe.
-2|1|Jammed Lock|Easy|Obstacle|The lock clicks open with a satisfying clunk.|The lockpick snaps, making more noise than intended.
-3|3|Flickering Power Grid|Hard|Obstacle|Power is stabilized, and all systems are green.|A console shorts out, plunging the bridge into darkness.
-4|3|Rival Scavenger|Medium|Character|The scavenger offers a valuable piece of intel for a cut.|The scavenger ambushes the character, trying to steal their gear.
+tblChallenges:id|scene_id|card_id|difficulty|strong_outcome|weak_outcome
+1|1|12|Medium|The bouncer gives a knowing nod and looks the other way.|The bouncer blocks the path, demanding a hefty bribe.
+2|1|13|Easy|The lock clicks open with a satisfying clunk.|The lockpick snaps, making more noise than intended.
+3|3|14|Hard|Power is stabilized, and all systems are green.|A console shorts out, plunging the bridge into darkness.
+4|3|15|Medium|The scavenger offers a valuable piece of intel for a cut.|The scavenger ambushes the character, trying to steal their gear.
 
 tblPipsperChallenge:id|challenge_id|pips
 1|1|3

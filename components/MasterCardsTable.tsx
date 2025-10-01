@@ -62,6 +62,11 @@ const MasterCardsTable: React.FC = () => {
         setOpenAccordion(prev => (prev === key ? null : key));
     };
 
+    const getTypeName = (typeId: number | null) => {
+        if (typeId === null) return 'Uncategorized';
+        return allCardTypes.find(ct => ct.id === typeId)?.name ?? 'Unknown';
+    };
+
     const renderCardRow = (card: Card | null, isNew: boolean) => {
         const data = isNew && editingState?.type === 'new_card' ? editingState.data : editingCard;
         const isEditingThisRow = (isNew && isAddingCard) || (card && editingCard?.id === card.id);
@@ -72,6 +77,7 @@ const MasterCardsTable: React.FC = () => {
                     <td className="p-2 font-medium whitespace-nowrap">{card.id}</td>
                     <td className="p-2">{card.name}</td>
                     <td className="p-2 text-xs text-gray-400">{card.desc}</td>
+                    <td className="p-2 text-xs text-gray-400">{getTypeName(card.default_card_type_id)}</td>
                     <td className="p-2">
                         <span className={`px-2 py-1 text-xs rounded-full ${card.is_wild ? 'bg-purple-900 text-purple-300' : 'bg-gray-600 text-gray-300'}`}>
                             {card.is_wild ? 'Yes' : 'No'}
@@ -97,23 +103,27 @@ const MasterCardsTable: React.FC = () => {
                     <td className="p-2">
                         <input type="text" value={data.desc} onChange={(e) => handleEditingChange('desc', e.target.value)} className="bg-gray-800 p-1 rounded-md w-full" />
                     </td>
-                    <td className="p-2" colSpan={2}>
-                        <div className="flex items-center space-x-2">
-                             <div className="flex-grow">
-                                <label className="text-xs text-gray-400">Default Type</label>
-                                <select value={data.default_card_type_id ?? ''} onChange={(e) => handleEditingChange('default_card_type_id', e.target.value ? parseInt(e.target.value, 10) : null)} className="bg-gray-800 p-1 rounded-md w-full text-sm">
-                                    <option value="">Uncategorized</option>
-                                    {allCardTypes.map(ct => <option key={ct.id} value={ct.id}>{ct.name}</option>)}
-                                </select>
-                            </div>
-                            <div className="text-center">
-                                <label className="text-xs text-gray-400">Wild</label>
-                                <input type="checkbox" checked={!!data.is_wild} onChange={(e) => handleEditingChange('is_wild', e.target.checked ? 1 : 0)} className="block mx-auto mt-1 w-4 h-4 text-blue-600 bg-gray-600 border-gray-500 rounded focus:ring-blue-600 ring-offset-gray-800 focus:ring-2" />
-                            </div>
-                            <div className="flex items-end h-full space-x-2">
-                                <button onClick={handleSave} className="text-green-400 hover:text-white" aria-label="Save changes"><SaveIcon /></button>
-                                <button onClick={handleCancelEdit} className="text-gray-400 hover:text-white" aria-label="Cancel editing"><CancelIcon /></button>
-                            </div>
+                     <td className="p-2">
+                        <select value={data.default_card_type_id ?? ''} onChange={(e) => handleEditingChange('default_card_type_id', e.target.value ? parseInt(e.target.value, 10) : null)} className="bg-gray-800 p-1 rounded-md w-full text-sm">
+                            <option value="">Uncategorized</option>
+                            {allCardTypes.map(ct => <option key={ct.id} value={ct.id}>{ct.name}</option>)}
+                        </select>
+                    </td>
+                    <td className="p-2">
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input 
+                                type="checkbox" 
+                                checked={!!data.is_wild} 
+                                onChange={(e) => handleEditingChange('is_wild', e.target.checked ? 1 : 0)} 
+                                className="sr-only peer"
+                            />
+                            <div className="w-9 h-5 bg-gray-600 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                    </td>
+                    <td className="p-2">
+                        <div className="flex justify-end items-center space-x-2">
+                            <button onClick={handleSave} className="text-green-400 hover:text-white" aria-label="Save changes"><SaveIcon /></button>
+                            <button onClick={handleCancelEdit} className="text-gray-400 hover:text-white" aria-label="Cancel editing"><CancelIcon /></button>
                         </div>
                     </td>
                 </tr>
@@ -148,7 +158,18 @@ const MasterCardsTable: React.FC = () => {
 
             {isAddingCard && (
                 <div className="p-2 bg-gray-700/50 rounded-md">
+                    <h4 className="text-md font-semibold text-gray-300 mb-2 px-1">Adding New Premade Card</h4>
                     <table className="w-full text-sm text-left text-gray-300">
+                        <thead className="text-xs text-gray-400 uppercase bg-gray-700/80">
+                            <tr>
+                                <th scope="col" className="p-2">ID</th>
+                                <th scope="col" className="p-2">Name</th>
+                                <th scope="col" className="p-2">Description</th>
+                                <th scope="col" className="p-2">Default Type</th>
+                                <th scope="col" className="p-2">Wild</th>
+                                <th scope="col" className="p-2 text-right">Actions</th>
+                            </tr>
+                        </thead>
                         <tbody>
                             {renderCardRow(null, true)}
                         </tbody>
@@ -176,6 +197,7 @@ const MasterCardsTable: React.FC = () => {
                                                 <th scope="col" className="p-2">ID</th>
                                                 <th scope="col" className="p-2">Name</th>
                                                 <th scope="col" className="p-2">Description</th>
+                                                <th scope="col" className="p-2">Default Type</th>
                                                 <th scope="col" className="p-2">Wild</th>
                                                 <th scope="col" className="p-2 text-right">Actions</th>
                                             </tr>

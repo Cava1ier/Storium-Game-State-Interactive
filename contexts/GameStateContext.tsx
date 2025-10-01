@@ -1,6 +1,6 @@
 import React, { createContext, useMemo } from 'react';
 import { GameScaffold } from '../services/gameScaffold';
-import { Game, Scene, Character, Challenge, UICard, Player, PlayerCharacterOwnership, EditingState, Card, CardType, Act, NewCharacterPayload } from '../types';
+import { Game, Scene, Character, UICard, Player, PlayerCharacterOwnership, EditingState, Card, CardType, Act, NewCharacterPayload, UIChallenge } from '../types';
 import { useGameState } from './handlers/useGameState';
 import { useModalState } from './handlers/useModalState';
 import { useAppHandlers } from './handlers/useAppHandlers';
@@ -21,7 +21,7 @@ export interface GameStateContextType {
     acts: Act[];
     scenes: Scene[];
     characters: Character[];
-    challenges: Challenge[];
+    challenges: UIChallenge[];
     cards: UICard[];
     selectedGameId: number | null;
     selectedActId: number | null;
@@ -66,7 +66,7 @@ export interface GameStateContextType {
     handleCreateCharacter: (payload: NewCharacterPayload) => void;
     handleDeleteCharacter: (id: number) => void;
     handleAddChallenge: () => void;
-    handleEditChallenge: (challenge: Challenge) => void;
+    handleEditChallenge: (challenge: UIChallenge) => void;
     handleDeleteChallenge: (id: number) => void;
     handleAddPlayer: () => void;
     handleDeletePlayer: (id: number) => void;

@@ -1,7 +1,7 @@
 import { DatabaseDriver } from './database';
 import { GrokCrud } from './grokCrud';
 import { initialData } from '../data/initial-data';
-import { Game, Scene, Character, Challenge, Card, CardType, CharacterCard, PlayedCard, PipsPerChallenge, UICard, Player, PlayerCharacterOwnership, Act, UIPlayedCard, NewCharacterPayload } from '../types';
+import { Game, Scene, Character, Challenge, Card, CardType, CharacterCard, PlayedCard, PipsPerChallenge, UICard, Player, PlayerCharacterOwnership, Act, UIPlayedCard, NewCharacterPayload, UIChallenge } from '../types';
 import { GameCRUDRead, GameCRUDCreate, GameCRUDUpdate, GameCRUDDelete } from './game-crud';
 
 // --- MAIN FACADE CLASS ---
@@ -38,7 +38,7 @@ export class GameScaffold {
       this.crud.define('tblCardTypes', { fields: ['id', 'name'] });
       this.crud.define('tblCards', { fields: ['id', 'name', 'desc', 'is_wild', 'default_card_type_id'] });
       this.crud.define('tblCardsWTypesWCharacter', { fields: ['id', 'character_id', 'card_type_id', 'card_id', 'count'] });
-      this.crud.define('tblChallenges', { fields: ['id', 'scene_id', 'name', 'difficulty', 'type', 'strong_outcome', 'weak_outcome'] });
+      this.crud.define('tblChallenges', { fields: ['id', 'scene_id', 'card_id', 'difficulty', 'strong_outcome', 'weak_outcome'] });
       this.crud.define('tblPipsperChallenge', { fields: ['id', 'challenge_id', 'pips']});
       this.crud.define('tblCardsPlayedOnChallenges', { fields: ['id', 'challenge_id', 'CharacterwCards_id']});
   }

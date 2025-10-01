@@ -34,11 +34,14 @@ export interface Character extends BaseRecord {
 
 export interface Challenge extends BaseRecord {
   scene_id: number;
-  name: string;
+  card_id: number;
   difficulty: 'Easy' | 'Medium' | 'Hard';
-  type: 'Obstacle' | 'Character';
   strong_outcome: string;
   weak_outcome: string;
+}
+
+export interface UIChallenge extends Challenge {
+    card: Card;
 }
 
 export interface Card extends BaseRecord {
@@ -97,21 +100,25 @@ export interface NewCharacterPayload {
     natureCardId: number;
     natureCardName: string;
     natureCardDesc: string;
+    natureCardCount: number;
 
     strengthSelectionType: 'premade' | 'custom';
     strengthCardId: number;
     strengthCardName: string;
     strengthCardDesc: string;
+    strengthCardCount: number;
 
     weaknessSelectionType: 'premade' | 'custom';
     weaknessCardId: number;
     weaknessCardName: string;
     weaknessCardDesc: string;
+    weaknessCardCount: number;
     
     subplotSelectionType: 'premade' | 'custom';
     subplotCardId: number;
     subplotCardName: string;
     subplotCardDesc: string;
+    subplotCardCount: number;
 }
 
 export type EditingState = 
@@ -119,7 +126,7 @@ export type EditingState =
     | { type: 'act'; data: Act }
     | { type: 'scene'; data: Scene }
     | { type: 'character'; data: Character & { playerId: number | null } }
-    | { type: 'challenge'; data: Challenge & { pips: number } }
+    | { type: 'challenge'; data: UIChallenge & { pips: number } }
     | { type: 'player'; data: Player }
     | { type: 'card'; data: Card }
     | { type: 'character_card'; data: { characterCardId: number; count: number; card_id: number; card_type_id: number; } }
@@ -127,6 +134,6 @@ export type EditingState =
     | { type: 'new_game'; data: { name: string; desc: string } }
     | { type: 'new_act'; data: { name: string; desc: string } }
     | { type: 'new_scene'; data: { name: string; desc: string } }
-    | { type: 'new_challenge'; data: { name: string; strong_outcome: string; weak_outcome: string; pips: number; difficulty: 'Easy' | 'Medium' | 'Hard'; type: 'Obstacle' | 'Character'; } }
+    | { type: 'new_challenge'; data: { card_id: number; strong_outcome: string; weak_outcome: string; pips: number; difficulty: 'Easy' | 'Medium' | 'Hard'; } }
     | { type: 'new_card'; data: { name: string; desc: string; is_wild: 0 | 1; default_card_type_id: number | null; } }
     | null;

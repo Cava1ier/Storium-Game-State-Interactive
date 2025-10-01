@@ -166,6 +166,15 @@ export class Database {
     if (!table) throw new Error(`Table ${tableName} not found`);
     table.rows.delete(id);
   }
+
+  clearAllTables(): void {
+    const allTables = this.tables.getAllTables();
+    for (const tableName in allTables) {
+      if (Object.prototype.hasOwnProperty.call(allTables, tableName)) {
+        allTables[tableName].rows.clear();
+      }
+    }
+  }
 }
 
 export class DatabaseDriver {
@@ -176,6 +185,8 @@ export class DatabaseDriver {
   }
 
   loadFromText(text: string): void {
+    this.database.clearAllTables();
+    
     const lines = text.split('\n');
     let currentTable: Table | null = null;
     let columns: string[] = [];

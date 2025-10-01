@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useGameContext } from '../hooks/useGameContext';
-import { NewCharacterPayload, Card } from '../types';
+import { NewCharacterPayload, Card, CardType } from '../types';
 import { CancelIcon } from './Icons';
 
 const CardSelector: React.FC<{
@@ -14,9 +14,18 @@ const CardSelector: React.FC<{
     customDesc: string;
     onCustomDescChange: (desc: string) => void;
     allCards: Card[];
+    allCardTypes: CardType[];
     count: number;
-}> = ({ cardType, selectionType, onSelectionTypeChange, premadeId, onPremadeIdChange, customName, onCustomNameChange, customDesc, onCustomDescChange, allCards, count }) => {
+}> = ({ cardType, selectionType, onSelectionTypeChange, premadeId, onPremadeIdChange, customName, onCustomNameChange, customDesc, onCustomDescChange, allCards, allCardTypes, count }) => {
     const fieldId = cardType.toLowerCase();
+    
+    const relevantCardTypeId = allCardTypes.find(ct => ct.name === cardType)?.id;
+    
+    const filteredPremadeCards = allCards.filter(c => 
+        !c.is_wild && 
+        (c.default_card_type_id === relevantCardTypeId || c.default_card_type_id === null)
+    );
+
     return (
         <fieldset className="p-4 border border-gray-600 rounded-md">
             <legend className="px-2 text-lg font-semibold text-gray-300">{cardType} Card (x{count})</legend>
@@ -37,7 +46,7 @@ const CardSelector: React.FC<{
                         <label className="block mb-2 text-sm font-medium text-gray-300">Premade {cardType} *</label>
                         <select value={premadeId} onChange={e => onPremadeIdChange(parseInt(e.target.value))} className="bg-gray-700 p-2 rounded-md w-full">
                             <option value={0}>Choose a {cardType}</option>
-                            {allCards.filter(c => !c.is_wild).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                            {filteredPremadeCards.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
                     </div>
                 ) : (
@@ -63,10 +72,11 @@ const CreateCharacterModal: React.FC = () => {
         closeCreateCharacterModal,
         handleCreateCharacter,
         players,
-        allCards
+        allCards,
+        allCardTypes
     } = useGameContext();
 
-    const initialPayload = {
+    const initialPayload: Omit<NewCharacterPayload, 'playerId'> & { playerId: string } = {
         name: '',
         status: 'Active' as 'Active' | 'Idle',
         playerId: '',
@@ -74,18 +84,22 @@ const CreateCharacterModal: React.FC = () => {
         natureCardId: 0,
         natureCardName: '',
         natureCardDesc: '',
+        natureCardCount: 2,
         strengthSelectionType: 'premade' as 'premade' | 'custom',
         strengthCardId: 0,
         strengthCardName: '',
         strengthCardDesc: '',
+        strengthCardCount: 2,
         weaknessSelectionType: 'premade' as 'premade' | 'custom',
         weaknessCardId: 0,
         weaknessCardName: '',
         weaknessCardDesc: '',
+        weaknessCardCount: 1,
         subplotSelectionType: 'premade' as 'premade' | 'custom',
         subplotCardId: 0,
         subplotCardName: '',
         subplotCardDesc: '',
+        subplotCardCount: 3,
     };
     
     const [payload, setPayload] = useState(initialPayload);
@@ -180,7 +194,8 @@ const CreateCharacterModal: React.FC = () => {
                         customDesc={payload.natureCardDesc}
                         onCustomDescChange={(desc) => handleChange('natureCardDesc', desc)}
                         allCards={allCards}
-                        count={2}
+                        allCardTypes={allCardTypes}
+                        count={payload.natureCardCount}
                     />
                     
                     <CardSelector 
@@ -194,7 +209,8 @@ const CreateCharacterModal: React.FC = () => {
                         customDesc={payload.strengthCardDesc}
                         onCustomDescChange={(desc) => handleChange('strengthCardDesc', desc)}
                         allCards={allCards}
-                        count={2}
+                        allCardTypes={allCardTypes}
+                        count={payload.strengthCardCount}
                     />
 
                     <CardSelector 
@@ -208,7 +224,8 @@ const CreateCharacterModal: React.FC = () => {
                         customDesc={payload.weaknessCardDesc}
                         onCustomDescChange={(desc) => handleChange('weaknessCardDesc', desc)}
                         allCards={allCards}
-                        count={1}
+                        allCardTypes={allCardTypes}
+                        count={payload.weaknessCardCount}
                     />
                     
                     <CardSelector 
@@ -222,7 +239,8 @@ const CreateCharacterModal: React.FC = () => {
                         customDesc={payload.subplotCardDesc}
                         onCustomDescChange={(desc) => handleChange('subplotCardDesc', desc)}
                         allCards={allCards}
-                        count={3}
+                        allCardTypes={allCardTypes}
+                        count={payload.subplotCardCount}
                     />
                     
                     {error && <p className="text-sm text-red-400 text-center">{error}</p>}

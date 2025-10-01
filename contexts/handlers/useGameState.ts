@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Game, Scene, Character, Challenge, UICard, Player, PlayerCharacterOwnership, EditingState, Card, CardType, Act } from '../../types';
+import { Game, Scene, Character, UICard, Player, PlayerCharacterOwnership, EditingState, Card, CardType, Act, UIChallenge } from '../../types';
 
 export const useGameState = () => {
     const [games, setGames] = useState<Game[]>([]);
@@ -10,7 +10,7 @@ export const useGameState = () => {
     const [acts, setActs] = useState<Act[]>([]);
     const [scenes, setScenes] = useState<Scene[]>([]);
     const [characters, setCharacters] = useState<Character[]>([]);
-    const [challenges, setChallenges] = useState<Challenge[]>([]);
+    const [challenges, setChallenges] = useState<UIChallenge[]>([]);
     const [cards, setCards] = useState<UICard[]>([]);
     
     const [selectedGameId, setSelectedGameId] = useState<number | null>(null);

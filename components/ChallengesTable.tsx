@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Challenge, CardType } from '../types';
+import { CardType, UIChallenge } from '../types';
 import { EditIcon, SaveIcon, CancelIcon, DeleteIcon, PipIcon } from './Icons';
 import { useGameContext } from '../hooks/useGameContext';
 
@@ -20,6 +19,8 @@ const ChallengesTable: React.FC = () => {
         selectedCharacterId,
         handlePlayCardOnChallenge,
         handleRemoveCardFromChallenge,
+        allCards,
+        allCardTypes,
     } = useGameContext();
 
     const [pipsError, setPipsError] = React.useState<string | null>(null);
@@ -30,6 +31,16 @@ const ChallengesTable: React.FC = () => {
         const weakTypes = [2, 8]; // Weakness, Wild(Weak)
         return weakTypes.includes(cardType.id) ? 'weak' : 'strong';
     };
+
+    const challengeCardTypes = React.useMemo(() => {
+        const obstacleId = allCardTypes.find(ct => ct.name === 'Obstacle')?.id;
+        const npcId = allCardTypes.find(ct => ct.name === 'Character(Npc)')?.id;
+        return [obstacleId, npcId].filter(id => id !== undefined);
+    }, [allCardTypes]);
+
+    const availableChallengeCards = React.useMemo(() => {
+        return allCards.filter(c => c.default_card_type_id && challengeCardTypes.includes(c.default_card_type_id));
+    }, [allCards, challengeCardTypes]);
 
     const PipsDisplay: React.FC<{challengeId: number}> = ({ challengeId }) => {
         const maxPips = scaffold.getPipsForChallenge(challengeId);
@@ -86,20 +97,9 @@ const ChallengesTable: React.FC = () => {
     }, [scenePips.used, scenePips.max]);
 
     const editingItemId = React.useMemo(() => {
-        if (!editingState) {
-            return undefined;
-        }
-        switch (editingState.type) {
-            case 'game':
-            case 'act':
-            case 'scene':
-            case 'character':
-            case 'challenge':
-            case 'player':
-                return editingState.data.id;
-            default:
-                return undefined;
-        }
+        if (!editingState) return undefined;
+        if (editingState.type === 'challenge') return editingState.data.id;
+        return undefined;
     }, [editingState]);
 
     React.useEffect(() => {
@@ -125,6 +125,7 @@ const ChallengesTable: React.FC = () => {
 
     const editingChallenge = editingState?.type === 'challenge' ? editingState.data : null;
     const isAddingChallenge = editingState?.type === 'new_challenge';
+    const difficultyOptions = ['Easy', 'Medium', 'Hard'];
 
   return (
     <div className="overflow-x-auto">
@@ -133,7 +134,7 @@ const ChallengesTable: React.FC = () => {
           <tr>
             <th scope="col" className="p-2 w-10">Sel</th>
             <th scope="col" className="p-2 w-10">ID</th>
-            <th scope="col" className="p-2">Name</th>
+            <th scope="col" className="p-2">Challenge Card</th>
             <th scope="col" className="p-2 w-48">Pips</th>
             <th scope="col" className="p-2">Strong Outcome</th>
             <th scope="col" className="p-2">Weak Outcome</th>
@@ -145,8 +146,14 @@ const ChallengesTable: React.FC = () => {
              <tr className="border-b border-gray-700 bg-yellow-900/30">
                <td className="p-2">-</td>
                <td className="p-2 font-medium whitespace-nowrap text-gray-500">*</td>
-               <td className="p-2">
-                 <input type="text" value={editingState.data.name} onChange={(e) => handleEditingChange('name', e.target.value)} className="bg-gray-800 p-1 rounded-md w-full" autoFocus />
+               <td className="p-2 space-y-2">
+                 <select value={editingState.data.card_id} onChange={(e) => handleEditingChange('card_id', parseInt(e.target.value))} className="bg-gray-800 p-1 rounded-md w-full" autoFocus>
+                    <option value="">Select Card</option>
+                    {availableChallengeCards.map(card => <option key={card.id} value={card.id}>{card.name}</option>)}
+                 </select>
+                 <select value={editingState.data.difficulty} onChange={(e) => handleEditingChange('difficulty', e.target.value)} className="bg-gray-800 p-1 rounded-md w-full">
+                    {difficultyOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                 </select>
                </td>
                <td className="p-2 align-top">
                  <div className="flex flex-col">
@@ -168,7 +175,7 @@ const ChallengesTable: React.FC = () => {
                </td>
                <td className="p-2">
                  <div className="flex justify-end items-center space-x-2">
-                   <button onClick={handleSave} disabled={!!pipsError} className="text-green-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Save new challenge"><SaveIcon /></button>
+                   <button onClick={handleSave} disabled={!!pipsError || !editingState.data.card_id} className="text-green-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Save new challenge"><SaveIcon /></button>
                    <button onClick={handleCancelEdit} className="text-gray-400 hover:text-white" aria-label="Cancel adding challenge"><CancelIcon /></button>
                  </div>
                </td>
@@ -212,8 +219,23 @@ const ChallengesTable: React.FC = () => {
                     />
                   </td>
                   <td className="p-2 font-medium whitespace-nowrap">{challenge.id}</td>
-                  <td className="p-2">
-                      {isEditing ? <input type="text" value={editingChallenge?.name ?? ''} onChange={(e) => handleEditingChange('name', e.target.value)} className="bg-gray-800 p-1 rounded-md w-full" /> : challenge.name}
+                  <td className="p-2 align-top">
+                      {isEditing ? (
+                        <div className="space-y-2">
+                            <select value={editingChallenge?.card_id} onChange={(e) => handleEditingChange('card_id', parseInt(e.target.value))} className="bg-gray-800 p-1 rounded-md w-full">
+                                {availableChallengeCards.map(card => <option key={card.id} value={card.id}>{card.name}</option>)}
+                            </select>
+                            <select value={editingChallenge?.difficulty} onChange={(e) => handleEditingChange('difficulty', e.target.value)} className="bg-gray-800 p-1 rounded-md w-full">
+                                {difficultyOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                            </select>
+                        </div>
+                      ) : (
+                        <div>
+                            <p className="font-semibold">{challenge.card.name}</p>
+                            <p className="text-xs text-gray-400">{challenge.card.desc}</p>
+                            <p className="text-xs text-gray-500 font-mono mt-1">{challenge.difficulty}</p>
+                        </div>
+                      )}
                   </td>
                   <td className="p-2 align-top">
                       {isEditing ? (
@@ -246,8 +268,8 @@ const ChallengesTable: React.FC = () => {
                             </>
                         ) : (
                             <>
-                                <button onClick={() => handleEditChallenge(challenge)} className="text-gray-400 hover:text-white p-1" aria-label={`Edit ${challenge.name}`}><EditIcon /></button>
-                                <button onClick={() => handleDeleteChallenge(challenge.id)} className="text-red-500 hover:text-red-400 p-1" aria-label={`Delete ${challenge.name}`}><DeleteIcon /></button>
+                                <button onClick={() => handleEditChallenge(challenge)} className="text-gray-400 hover:text-white p-1" aria-label={`Edit ${challenge.card.name}`}><EditIcon /></button>
+                                <button onClick={() => handleDeleteChallenge(challenge.id)} className="text-red-500 hover:text-red-400 p-1" aria-label={`Delete ${challenge.card.name}`}><DeleteIcon /></button>
                             </>
                         )}
                     </div>

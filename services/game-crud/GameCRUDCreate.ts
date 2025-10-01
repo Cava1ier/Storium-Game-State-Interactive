@@ -25,10 +25,10 @@ export class GameCRUDCreate extends BaseCrudHandler {
         if (payload.playerId) this.scaffold.updateCharacterOwnership(newCharacter.id, payload.playerId);
 
         const cardMappings = [
-            { typeName: 'Nature', cardId: createOrGetCardId('nature'), count: 2 },
-            { typeName: 'Strength', cardId: createOrGetCardId('strength'), count: 2 },
-            { typeName: 'Weakness', cardId: createOrGetCardId('weakness'), count: 1 },
-            { typeName: 'Subplot', cardId: createOrGetCardId('subplot'), count: 3 },
+            { typeName: 'Nature', cardId: createOrGetCardId('nature'), count: payload.natureCardCount },
+            { typeName: 'Strength', cardId: createOrGetCardId('strength'), count: payload.strengthCardCount },
+            { typeName: 'Weakness', cardId: createOrGetCardId('weakness'), count: payload.weaknessCardCount },
+            { typeName: 'Subplot', cardId: createOrGetCardId('subplot'), count: payload.subplotCardCount },
             { typeName: 'Wild(Str)', cardName: 'Unnamed Wild (Strength)', count: 2 },
             { typeName: 'Wild(Weak)', cardName: 'Unnamed Wild (Weakness)', count: 2 },
         ];

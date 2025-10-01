@@ -1,5 +1,5 @@
 import { GameScaffold } from '../../services/gameScaffold';
-import { Challenge, NewCharacterPayload } from '../../types';
+import { UIChallenge, NewCharacterPayload } from '../../types';
 import { useGameState } from './useGameState';
 import { useAppHandlers } from './useAppHandlers';
 import { useModalState } from './useModalState';
@@ -16,7 +16,7 @@ interface CrudHandlersProps {
 }
 
 export const useCrudHandlers = ({ scaffold, gameState, appHandlers, modalState }: CrudHandlersProps) => {
-    const { editingState, setEditingState, selectedGameId, selectedActId, selectedSceneId, setSelectedGameId, setSelectedActId, setSelectedSceneId, setSelectedCharacterId, setSelectedChallengeId, selectedCharacterId, selectedChallengeId } = gameState;
+    const { editingState, setEditingState, selectedGameId, selectedActId, selectedSceneId, setSelectedGameId, setSelectedActId, setSelectedSceneId, setSelectedCharacterId, setSelectedChallengeId, selectedCharacterId, selectedChallengeId, allCards, allCardTypes } = gameState;
     const { refresh } = appHandlers;
     const { openCreateCharacterModal, closeCreateCharacterModal } = modalState;
 
@@ -33,7 +33,11 @@ export const useCrudHandlers = ({ scaffold, gameState, appHandlers, modalState }
                     scaffold.updateCharacterOwnership(charData.id, playerId);
                     break;
                 }
-                case 'challenge': scaffold.updateChallenge(editingState.data.id, editingState.data); break;
+                case 'challenge': {
+                    const { card, ...challengeData } = editingState.data;
+                    scaffold.updateChallenge(challengeData.id, challengeData); 
+                    break;
+                }
                 case 'player': scaffold.updatePlayer(editingState.data.id, editingState.data); break;
                 case 'card': scaffold.updateCard(editingState.data.id, editingState.data); break;
                 case 'character_card': {
@@ -62,7 +66,7 @@ export const useCrudHandlers = ({ scaffold, gameState, appHandlers, modalState }
                     }
                     break;
                 case 'new_challenge':
-                    if (selectedSceneId && editingState.data.name.trim()) {
+                    if (selectedSceneId && editingState.data.card_id) {
                         scaffold.createChallenge(selectedSceneId, editingState.data);
                     }
                     break;
@@ -181,10 +185,19 @@ export const useCrudHandlers = ({ scaffold, gameState, appHandlers, modalState }
 
     const handleAddChallenge = () => {
         if (!selectedSceneId) return alert("Please select a scene first.");
-        setEditingState({ type: 'new_challenge', data: { name: '', difficulty: 'Medium', type: 'Obstacle', pips: 1, strong_outcome: "Success!", weak_outcome: "Failure." }});
+        const obstacleId = allCardTypes.find(ct => ct.name === 'Obstacle')?.id;
+        const npcId = allCardTypes.find(ct => ct.name === 'Character(Npc)')?.id;
+        const defaultCard = allCards.find(c => c.default_card_type_id === obstacleId || c.default_card_type_id === npcId);
+
+        if (!defaultCard) {
+            alert("Please create at least one 'Obstacle' or 'Character(Npc)' card in the Premade Cards section before adding a challenge.");
+            return;
+        }
+
+        setEditingState({ type: 'new_challenge', data: { card_id: defaultCard.id, difficulty: 'Medium', pips: 1, strong_outcome: "Success!", weak_outcome: "Failure." }});
     };
 
-    const handleEditChallenge = (challenge: Challenge) => {
+    const handleEditChallenge = (challenge: UIChallenge) => {
         const pips = scaffold.getPipsForChallenge(challenge.id);
         setEditingState({ type: 'challenge', data: { ...challenge, pips } });
     };

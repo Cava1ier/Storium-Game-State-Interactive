@@ -18,7 +18,9 @@ export class GameCRUDUpdate extends BaseCrudHandler {
             this.validatePips(challenge.scene_id, pips, oldPips);
             this.updatePipsForChallenge(id, pips);
         }
-        this.crud.update<Challenge>('tblChallenges', id, challengeData);
+        if (Object.keys(challengeData).length > 0) {
+            this.crud.update<Challenge>('tblChallenges', id, challengeData);
+        }
     }
 
     private validatePips(sceneId: number, newPips: number, oldPips: number) {
