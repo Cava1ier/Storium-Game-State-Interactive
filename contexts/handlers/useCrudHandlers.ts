@@ -194,7 +194,7 @@ export const useCrudHandlers = ({ scaffold, gameState, appHandlers, modalState }
             return;
         }
 
-        setEditingState({ type: 'new_challenge', data: { card_id: defaultCard.id, difficulty: 'Medium', pips: 1, strong_outcome: "Success!", weak_outcome: "Failure." }});
+        setEditingState({ type: 'new_challenge', data: { card_id: defaultCard.id, pips: 1, strong_outcome: "Success!", weak_outcome: "Failure." }});
     };
 
     const handleEditChallenge = (challenge: UIChallenge) => {

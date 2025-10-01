@@ -71,11 +71,11 @@ tblCardsWTypesWCharacter:id|character_id|card_type_id|card_id|count
 7|4|2|2|1
 8|4|1|3|1
 
-tblChallenges:id|scene_id|card_id|difficulty|strong_outcome|weak_outcome
-1|1|12|Medium|The bouncer gives a knowing nod and looks the other way.|The bouncer blocks the path, demanding a hefty bribe.
-2|1|13|Easy|The lock clicks open with a satisfying clunk.|The lockpick snaps, making more noise than intended.
-3|3|14|Hard|Power is stabilized, and all systems are green.|A console shorts out, plunging the bridge into darkness.
-4|3|15|Medium|The scavenger offers a valuable piece of intel for a cut.|The scavenger ambushes the character, trying to steal their gear.
+tblChallenges:id|scene_id|card_id|strong_outcome|weak_outcome
+1|1|12|The bouncer gives a knowing nod and looks the other way.|The bouncer blocks the path, demanding a hefty bribe.
+2|1|13|The lock clicks open with a satisfying clunk.|The lockpick snaps, making more noise than intended.
+3|3|14|Power is stabilized, and all systems are green.|A console shorts out, plunging the bridge into darkness.
+4|3|15|The scavenger offers a valuable piece of intel for a cut.|The scavenger ambushes the character, trying to steal their gear.
 
 tblPipsperChallenge:id|challenge_id|pips
 1|1|3

@@ -35,7 +35,6 @@ export interface Character extends BaseRecord {
 export interface Challenge extends BaseRecord {
   scene_id: number;
   card_id: number;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
   strong_outcome: string;
   weak_outcome: string;
 }
@@ -155,6 +154,6 @@ export type EditingState =
     | { type: 'new_game'; data: { name: string; desc: string } }
     | { type: 'new_act'; data: { name: string; desc: string } }
     | { type: 'new_scene'; data: { name: string; desc: string } }
-    | { type: 'new_challenge'; data: { card_id: number; strong_outcome: string; weak_outcome: string; pips: number; difficulty: 'Easy' | 'Medium' | 'Hard'; } }
+    | { type: 'new_challenge'; data: { card_id: number; strong_outcome: string; weak_outcome: string; pips: number; } }
     | { type: 'new_card'; data: { name: string; desc: string; is_wild: 0 | 1; default_card_type_id: number | null; } }
     | null;

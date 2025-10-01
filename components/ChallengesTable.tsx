@@ -125,7 +125,6 @@ const ChallengesTable: React.FC = () => {
 
     const editingChallenge = editingState?.type === 'challenge' ? editingState.data : null;
     const isAddingChallenge = editingState?.type === 'new_challenge';
-    const difficultyOptions = ['Easy', 'Medium', 'Hard'];
 
   return (
     <div className="overflow-x-auto">
@@ -146,13 +145,10 @@ const ChallengesTable: React.FC = () => {
              <tr className="border-b border-gray-700 bg-yellow-900/30">
                <td className="p-2">-</td>
                <td className="p-2 font-medium whitespace-nowrap text-gray-500">*</td>
-               <td className="p-2 space-y-2">
+               <td className="p-2">
                  <select value={editingState.data.card_id} onChange={(e) => handleEditingChange('card_id', parseInt(e.target.value))} className="bg-gray-800 p-1 rounded-md w-full" autoFocus>
                     <option value="">Select Card</option>
                     {availableChallengeCards.map(card => <option key={card.id} value={card.id}>{card.name}</option>)}
-                 </select>
-                 <select value={editingState.data.difficulty} onChange={(e) => handleEditingChange('difficulty', e.target.value)} className="bg-gray-800 p-1 rounded-md w-full">
-                    {difficultyOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                  </select>
                </td>
                <td className="p-2 align-top">
@@ -221,19 +217,15 @@ const ChallengesTable: React.FC = () => {
                   <td className="p-2 font-medium whitespace-nowrap">{challenge.id}</td>
                   <td className="p-2 align-top">
                       {isEditing ? (
-                        <div className="space-y-2">
+                        <div>
                             <select value={editingChallenge?.card_id} onChange={(e) => handleEditingChange('card_id', parseInt(e.target.value))} className="bg-gray-800 p-1 rounded-md w-full">
                                 {availableChallengeCards.map(card => <option key={card.id} value={card.id}>{card.name}</option>)}
-                            </select>
-                            <select value={editingChallenge?.difficulty} onChange={(e) => handleEditingChange('difficulty', e.target.value)} className="bg-gray-800 p-1 rounded-md w-full">
-                                {difficultyOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                             </select>
                         </div>
                       ) : (
                         <div>
                             <p className="font-semibold">{challenge.card.name}</p>
                             <p className="text-xs text-gray-400">{challenge.card.desc}</p>
-                            <p className="text-xs text-gray-500 font-mono mt-1">{challenge.difficulty}</p>
                         </div>
                       )}
                   </td>
