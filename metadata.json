@@ -1,0 +1,5 @@
+{
+  "name": "Storium Game State Manager",
+  "description": "An interactive web application to manage and visualize game state data for Storium-like role-playing games. It allows for live editing of games, scenes, characters, and challenges, and supports parsing and building data from a simple text format.",
+  "requestFramePermissions": []
+}
